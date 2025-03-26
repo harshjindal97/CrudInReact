@@ -37,10 +37,14 @@ router.post("/login", (req, res) => {
 });
 
 const verifyToken = (req, res, next) => {
-  const token = req.headers["authorization"];
+  var token = req.headers["authorization"];
   if (!token) return res.status(403).json({ message: "No token provided" });
-
+  if (token.startsWith("Bearer ")) {
+    token = token.slice(7, token.length);
+  }
+  console.log(token);
   jwt.verify(token, process.env.JWT, (err, decoded) => {
+    
     if (err) return res.status(401).json({ message: "Unauthorized",error: err });
     req.userId = decoded.id;
     next();
@@ -54,7 +58,6 @@ router.get("/profile", verifyToken, (req, res) => {
   });
 });
 
-//harsh
 
 
 module.exports = router;
